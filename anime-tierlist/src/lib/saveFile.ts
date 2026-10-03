@@ -9,7 +9,7 @@ export interface TierlistMeta {
 
 export class SaveFormatError extends Error {}
 
-const MODES: readonly Mode[] = ['anime', 'opening', 'ending'];
+const MODES: readonly Mode[] = ['anime', 'opening', 'ending', 'insert'];
 
 export function toSave(state: TierlistState, meta: TierlistMeta): TierlistSave {
   return {

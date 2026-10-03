@@ -1,6 +1,6 @@
 # Anime Tierlist
 
-Crée une tierlist, façon TierMaker, à partir de ta liste d'animés AniList ou MyAnimeList : classe tes **animés**, leurs **openings** ou leurs **endings**, écoute les musiques directement sur la page, puis sauvegarde ou partage le résultat en image.
+Crée une tierlist, façon TierMaker, à partir de ta liste d'animés AniList ou MyAnimeList : classe tes **animés**, leurs **openings**, leurs **endings** ou leurs **insert songs**, écoute les musiques directement sur la page, puis sauvegarde ou partage le résultat en image.
 
 **👉 [Ouvrir le site](https://propleek.github.io/animelisttiermaker/)**
 
@@ -9,7 +9,7 @@ Aucune inscription, aucune installation : tout se passe dans le navigateur.
 ## Fonctionnalités
 
 - **Import de ta liste** en tapant simplement ton pseudo AniList, ou depuis un export XML MyAnimeList : le site affiche le nombre d'animés et leur répartition par statut.
-- **Trois types de tierlist :** animés, openings ou endings.
+- **Quatre types de tierlist :** animés, openings, endings ou insert songs (les chansons diffusées pendant les épisodes).
 - **Filtre par statut** (Completed, Watching, Dropped…) pour ne classer que ce que tu veux.
 - **Couvertures récupérées automatiquement** pour chaque animé.
 - **Écoute des musiques :** chaque opening ou ending a un bouton ▶, et une barre de lecture permet la pause, de se déplacer dans le morceau et de régler le volume.
@@ -29,7 +29,7 @@ Aucune inscription, aucune installation : tout se passe dans le navigateur.
 
 ### 2. Créer la tierlist
 
-1. Clique sur *Continuer*, choisis le type de tierlist (**Animés**, **Openings** ou **Endings**) et les statuts à inclure.
+1. Clique sur *Continuer*, choisis le type de tierlist (**Animés**, **Openings**, **Endings** ou **Insert songs**) et les statuts à inclure.
 2. Clique sur *Créer la tierlist*. Le premier chargement prend quelques secondes ; les suivants sont quasi instantanés.
 
 ### 3. Classer
@@ -38,7 +38,7 @@ Aucune inscription, aucune installation : tout se passe dans le navigateur.
 - **Échap** annule un déplacement en cours.
 - À droite de chaque tier : **▲ / ▼** pour le déplacer, **−** pour le replier (**+** pour le déplier), **⚙** pour le renommer, changer sa couleur ou le supprimer. Une carte déposée sur un tier replié s'ajoute à la fin de ce tier. L'image PNG montre toujours tous les tiers dépliés.
 - *+ Ajouter un tier* crée une nouvelle ligne ; *Réinitialiser* renvoie toutes les cartes dans la réserve.
-- En mode Openings / Endings, **▶** sur une carte lance la musique.
+- En mode Openings, Endings ou Insert songs, **▶** sur une carte lance la musique.
 
 ### 4. Sauvegarder et partager
 
@@ -51,7 +51,7 @@ Aucune inscription, aucune installation : tout se passe dans le navigateur.
 | Données | Source |
 |---|---|
 | Liste d'un utilisateur AniList, couvertures des animés | [AniList](https://anilist.co) |
-| Liste des openings et endings | [AnisongDB](https://anisongdb.com) |
+| Liste des openings, endings et insert songs | [AnisongDB](https://anisongdb.com) |
 | Fichiers audio | [Anime Music Quiz](https://animemusicquiz.com) |
 
 Le site n'a pas de serveur : ta liste est lue **dans ton navigateur** et n'est envoyée nulle part. Seuls ton pseudo (pour l'import AniList) et les identifiants et titres des animés sont transmis à AniList et AnisongDB, pour récupérer ta liste, les couvertures et les musiques. Les réponses sont mises en cache dans ton navigateur pour accélérer les visites suivantes.

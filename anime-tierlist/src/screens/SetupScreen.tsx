@@ -20,6 +20,7 @@ const MODES: { value: Mode; label: string; description: string }[] = [
   { value: 'anime', label: 'Animés', description: 'Classer les animés de la liste' },
   { value: 'opening', label: 'Openings', description: 'Classer les openings de ces animés' },
   { value: 'ending', label: 'Endings', description: 'Classer les endings de ces animés' },
+  { value: 'insert', label: 'Insert songs', description: 'Classer les chansons diffusées pendant les épisodes' },
 ];
 
 export default function SetupScreen({ list, initial, onBack, onNext }: Props) {

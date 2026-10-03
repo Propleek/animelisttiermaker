@@ -1,6 +1,11 @@
-export type Mode = 'anime' | 'opening' | 'ending';
+export type Mode = 'anime' | 'opening' | 'ending' | 'insert';
 
-export const MODE_LABELS: Record<Mode, string> = { anime: 'Animés', opening: 'Openings', ending: 'Endings' };
+export const MODE_LABELS: Record<Mode, string> = {
+  anime: 'Animés',
+  opening: 'Openings',
+  ending: 'Endings',
+  insert: 'Insert songs',
+};
 
 /** Entrée issue du fichier XML MyAnimeList. */
 export interface AnimeEntry {

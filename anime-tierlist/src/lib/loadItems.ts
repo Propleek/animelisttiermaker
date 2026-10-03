@@ -17,7 +17,8 @@ export interface LoadResult {
   withoutSongs: string[];
 }
 
-const SONG_PREFIX = { opening: 'OP', ending: 'ED' } as const;
+/** Badge des cartes ; les insert songs ne sont pas numérotées par AnisongDB. */
+const SONG_PREFIX = { opening: 'OP', ending: 'ED', insert: 'INS' } as const;
 
 /** Construit les éléments classables à partir des entrées du XML. */
 export async function loadItems(

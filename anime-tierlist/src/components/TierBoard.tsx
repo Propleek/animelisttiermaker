@@ -27,23 +27,35 @@ import TierRow from './TierRow';
 import TierSettings from './TierSettings';
 import styles from './TierBoard.module.css';
 
+/** Délai avant qu'une carte puisse revenir dans le conteneur qu'elle vient de quitter. */
+const REVERSAL_COOLDOWN_MS = 250;
+
 interface Props {
   initial: TierlistState;
   meta: TierlistMeta;
   /** Prévient l'écran parent quand des modifications ne sont pas sauvegardées. */
   onDirtyChange: (dirty: boolean) => void;
+  /** Reçoit chaque nouvel état, pour pouvoir le sauvegarder si le plateau plante. */
+  onStateChange?: (state: TierlistState) => void;
+  /** Plateau relancé après une erreur : son état initial n'a jamais été sauvegardé. */
+  startDirty?: boolean;
 }
 
-export default function TierBoard({ initial, meta, onDirtyChange }: Props) {
+export default function TierBoard({ initial, meta, onDirtyChange, onStateChange, startDirty = false }: Props) {
   const [state, dispatch] = useTierlist(initial);
   /** Dernier état exporté : la tierlist est « modifiée » dès que l'état en diffère. */
-  const [savedState, setSavedState] = useState(initial);
+  const [savedState, setSavedState] = useState<TierlistState | null>(startDirty ? null : initial);
   const dirty = state !== savedState;
   const [activeId, setActiveId] = useState<string | null>(null);
   const [settingsTierId, setSettingsTierId] = useState<string | null>(null);
   const [confirmReset, setConfirmReset] = useState(false);
   /** État avant le déplacement, restauré si celui-ci est annulé (Échap). */
   const snapshot = useRef<TierlistState | null>(null);
+  /** Dernière cible de survol, et vrai jusqu'à l'image suivant un changement de conteneur. */
+  const lastOverId = useRef<UniqueIdentifier | null>(null);
+  const movedRecently = useRef(false);
+  /** Dernier changement de conteneur, pour bloquer un retour immédiat (voir handleDragOver). */
+  const lastMove = useRef<{ from: string; to: string; at: number } | null>(null);
   /** Zone capturée par l'export PNG : en-tête + tiers (sans la réserve ni les contrôles). */
   const captureRef = useRef<HTMLDivElement>(null);
   /** Date affichée dans l'en-tête de l'image ; non nulle pendant l'export. */
@@ -51,6 +63,17 @@ export default function TierBoard({ initial, meta, onDirtyChange }: Props) {
   const exporting = exportDate !== null;
   const [exportError, setExportError] = useState<string | null>(null);
 
+  // Libère la cible de survol une fois la mise en page du déplacement appliquée.
+  useEffect(() => {
+    const frame = requestAnimationFrame(() => {
+      movedRecently.current = false;
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [state]);
+
+  useEffect(() => {
+    onStateChange?.(state);
+  }, [state, onStateChange]);
   // Arrête la musique en quittant l'écran de tierlist.
   useEffect(() => () => player.stop(), []);
 
@@ -105,14 +128,20 @@ export default function TierBoard({ initial, meta, onDirtyChange }: Props) {
 
   /** Priorité aux cartes survolées ; sinon le conteneur sous le curseur. */
   const collisionDetection: CollisionDetection = (args) => {
+    // Juste après un changement de conteneur, la mise en page n'est pas encore stable : garder la
+    // cible précédente évite que la carte reparte aussitôt dans l'autre sens. Ces allers-retours
+    // pouvaient s'enchaîner jusqu'à « Maximum update depth exceeded » (écran vide).
+    if (movedRecently.current && lastOverId.current) return [{ id: lastOverId.current }];
     const hits = pointerWithin(args);
     const cardHits = hits.filter((h) => !containerIds.has(String(h.id)));
-    if (cardHits.length) return cardHits;
-    return hits.length ? hits : rectIntersection(args);
+    const result = cardHits.length ? cardHits : hits.length ? hits : rectIntersection(args);
+    if (result.length) lastOverId.current = result[0].id;
+    return result;
   };
 
   function handleDragStart({ active }: DragStartEvent) {
     snapshot.current = state;
+    lastMove.current = null;
     setActiveId(String(active.id));
   }
 
@@ -122,19 +151,33 @@ export default function TierBoard({ initial, meta, onDirtyChange }: Props) {
     const from = findContainer(active.id);
     const to = findContainer(over.id);
     if (!from || !to || from === to) return;
+    // Pas de retour immédiat dans le conteneur qu'on vient de quitter : rend impossible la boucle
+    // d'allers-retours, quel que soit le timing. Le lâcher (handleDragEnd) corrige la position finale.
+    const now = performance.now();
+    const last = lastMove.current;
+    if (last && last.from === to && last.to === from && now - last.at < REVERSAL_COOLDOWN_MS) return;
+    lastMove.current = { from, to, at: now };
+    movedRecently.current = true;
     const target = idsOf(to);
     const overIndex = target.indexOf(String(over.id));
     dispatch({ type: 'move', itemId: String(active.id), to, index: overIndex >= 0 ? overIndex : target.length });
   }
 
-  /** Réordonnancement final dans le conteneur d'arrivée. */
+  /**
+   * Position finale : réordonnancement dans le conteneur d'arrivée, ou changement de conteneur
+   * si un retour a été bloqué par le délai anti-boucle juste avant le lâcher.
+   */
   function handleDragEnd({ active, over }: DragEndEvent) {
     setActiveId(null);
     snapshot.current = null;
+    lastMove.current = null;
     if (!over || active.id === over.id) return;
     const to = findContainer(over.id);
-    if (!to || to !== findContainer(active.id) || containerIds.has(String(over.id))) return;
-    dispatch({ type: 'move', itemId: String(active.id), to, index: idsOf(to).indexOf(String(over.id)) });
+    if (!to) return;
+    const target = idsOf(to);
+    const overIndex = target.indexOf(String(over.id));
+    if (to === findContainer(active.id) && overIndex < 0) return;
+    dispatch({ type: 'move', itemId: String(active.id), to, index: overIndex >= 0 ? overIndex : target.length });
   }
 
   function handleDragCancel() {

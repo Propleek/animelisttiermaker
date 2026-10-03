@@ -5,6 +5,8 @@ import SetupScreen from './screens/SetupScreen';
 import type { SetupResult } from './screens/SetupScreen';
 import TierlistScreen from './screens/TierlistScreen';
 import type { TierlistSource } from './screens/TierlistScreen';
+import ErrorBoundary from './components/ErrorBoundary';
+import CrashPanel from './components/CrashPanel';
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('import');
@@ -27,27 +29,30 @@ export default function App() {
       <header className="app-header">
         <h1>Anime Tierlist</h1>
       </header>
-      {screen === 'import' && (
-        <ImportScreen list={list} onLoad={loadList} onOpenSave={openSave} onNext={() => setScreen('setup')} />
-      )}
-      {screen === 'setup' && list && (
-        <SetupScreen
-          list={list}
-          initial={setup}
-          onBack={() => setScreen('import')}
-          onNext={(result) => {
-            setSetup(result);
-            setSource({ type: 'load', userName: list.userName, setup: result });
-            setScreen('tierlist');
-          }}
-        />
-      )}
-      {screen === 'tierlist' && source && (
-        <TierlistScreen
-          source={source}
-          onBack={() => setScreen(source.type === 'load' ? 'setup' : 'import')}
-        />
-      )}
+      {/* Dernier recours : l'écran de tierlist a sa propre barrière, qui permet de sauvegarder. */}
+      <ErrorBoundary fallback={(error) => <CrashPanel error={error} />}>
+        {screen === 'import' && (
+          <ImportScreen list={list} onLoad={loadList} onOpenSave={openSave} onNext={() => setScreen('setup')} />
+        )}
+        {screen === 'setup' && list && (
+          <SetupScreen
+            list={list}
+            initial={setup}
+            onBack={() => setScreen('import')}
+            onNext={(result) => {
+              setSetup(result);
+              setSource({ type: 'load', userName: list.userName, setup: result });
+              setScreen('tierlist');
+            }}
+          />
+        )}
+        {screen === 'tierlist' && source && (
+          <TierlistScreen
+            source={source}
+            onBack={() => setScreen(source.type === 'load' ? 'setup' : 'import')}
+          />
+        )}
+      </ErrorBoundary>
     </main>
   );
 }

@@ -1,13 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { MODE_LABELS } from '../types';
 import type { TierlistSave } from '../types';
 import type { SetupResult } from './SetupScreen';
 import { loadItems } from '../lib/loadItems';
 import type { LoadProgress, LoadResult } from '../lib/loadItems';
+import { downloadSave } from '../lib/saveFile';
 import type { TierlistMeta } from '../lib/saveFile';
 import { createInitialState } from '../hooks/useTierlist';
 import type { TierlistState } from '../hooks/useTierlist';
 import TierBoard from '../components/TierBoard';
+import ErrorBoundary from '../components/ErrorBoundary';
+import CrashPanel from '../components/CrashPanel';
 import styles from './TierlistScreen.module.css';
 
 /** Origine de la tierlist : nouveau chargement depuis le XML, ou sauvegarde JSON. */
@@ -44,6 +47,14 @@ export default function TierlistScreen({ source, onBack }: Props) {
   const [attempt, setAttempt] = useState(0);
   const [dirty, setDirty] = useState(false);
   const [confirmBack, setConfirmBack] = useState(false);
+  /** Dernier état du plateau, pour le sauvegarder ou le reprendre s'il plante. */
+  const latestState = useRef<TierlistState | null>(null);
+  const rememberState = useCallback((s: TierlistState) => {
+    latestState.current = s;
+  }, []);
+  /** Après « Reprendre » : le plateau repart du dernier état connu (nouvelle clé = nouveau montage). */
+  const [recovered, setRecovered] = useState<TierlistState | null>(null);
+  const [boardKey, setBoardKey] = useState(0);
 
   useEffect(() => {
     if (source.type !== 'load') return;
@@ -115,7 +126,39 @@ export default function TierlistScreen({ source, onBack }: Props) {
       {state.status === 'done' && (
         <>
           {state.board.warnings && <Warnings {...state.board.warnings} />}
-          <TierBoard initial={state.board.initial} meta={state.board.meta} onDirtyChange={setDirty} />
+          <ErrorBoundary
+            key={boardKey}
+            fallback={(error) => (
+              <CrashPanel error={error}>
+                <button
+                  type="button"
+                  disabled={!latestState.current}
+                  onClick={() => latestState.current && downloadSave(latestState.current, state.board.meta)}
+                >
+                  Sauvegarder (JSON)
+                </button>
+                <button
+                  type="button"
+                  disabled={!latestState.current}
+                  onClick={() => {
+                    setRecovered(latestState.current);
+                    setBoardKey((k) => k + 1);
+                  }}
+                >
+                  Reprendre
+                </button>
+              </CrashPanel>
+            )}
+          >
+            <TierBoard
+              key={boardKey}
+              initial={recovered ?? state.board.initial}
+              meta={state.board.meta}
+              onDirtyChange={setDirty}
+              onStateChange={rememberState}
+              startDirty={recovered !== null}
+            />
+          </ErrorBoundary>
         </>
       )}
     </section>
