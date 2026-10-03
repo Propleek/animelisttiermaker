@@ -2,7 +2,7 @@
 
 Crée une tierlist, façon TierMaker, à partir de ta liste d'animés MyAnimeList : classe tes **animés**, leurs **openings** ou leurs **endings**, écoute les musiques directement sur la page, puis sauvegarde ou partage le résultat en image.
 
-**👉 [Ouvrir le site](https://<utilisateur>.github.io/<dépôt>/)**
+**👉 [Ouvrir le site](https://propleek.github.io/animelisttiermaker/)**
 
 Aucune inscription, aucune installation : tout se passe dans le navigateur.
 
