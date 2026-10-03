@@ -206,6 +206,7 @@ export default function TierBoard({ initial, meta, onDirtyChange }: Props) {
               isLast={i === state.tiers.length - 1}
               dispatch={dispatch}
               onOpenSettings={setSettingsTierId}
+              forceExpanded={exporting}
             />
           ))}
         </div>

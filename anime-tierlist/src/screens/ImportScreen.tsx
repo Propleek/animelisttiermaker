@@ -1,9 +1,22 @@
 import { useRef, useState } from 'react';
-import type { DragEvent } from 'react';
+import type { DragEvent, FormEvent } from 'react';
 import type { MalList, TierlistSave } from '../types';
 import { countByStatus, parseMalXml, XmlParseError } from '../lib/parseMalXml';
 import { parseSave, SaveFormatError } from '../lib/saveFile';
+import { AnilistUserError, fetchAnilistList } from '../lib/anilistUser';
 import styles from './ImportScreen.module.css';
+
+const ANILIST_USER_KEY = 'anime-tierlist:anilist-user';
+/** Nombre maximal de titres listés pour les animés sans ID MAL. */
+const MAX_LISTED_TITLES = 10;
+
+function loadAnilistUser(): string {
+  try {
+    return localStorage.getItem(ANILIST_USER_KEY) ?? '';
+  } catch {
+    return '';
+  }
+}
 
 interface Props {
   list: MalList | null;
@@ -17,6 +30,28 @@ export default function ImportScreen({ list, onLoad, onOpenSave, onNext }: Props
   const inputRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
+  const [anilistUser, setAnilistUser] = useState(loadAnilistUser);
+  const [fetching, setFetching] = useState(false);
+
+  async function handleAnilist(e: FormEvent) {
+    e.preventDefault();
+    const userName = anilistUser.trim();
+    if (!userName || fetching) return;
+    setError(null);
+    setFetching(true);
+    try {
+      onLoad(await fetchAnilistList(userName));
+      try {
+        localStorage.setItem(ANILIST_USER_KEY, userName);
+      } catch {
+        // Préférence facultative.
+      }
+    } catch (err) {
+      setError(err instanceof AnilistUserError ? err.message : `Récupération impossible : ${err instanceof Error ? err.message : String(err)}`);
+    } finally {
+      setFetching(false);
+    }
+  }
 
   async function handleFile(file: File | undefined) {
     if (!file) return;
@@ -43,6 +78,27 @@ export default function ImportScreen({ list, onLoad, onOpenSave, onNext }: Props
   return (
     <section>
       <h2>Importer une liste</h2>
+
+      <form className={styles.anilist} onSubmit={handleAnilist}>
+        <label htmlFor="anilist-user">Depuis AniList</label>
+        <div className={styles.anilistRow}>
+          <input
+            id="anilist-user"
+            type="text"
+            placeholder="Pseudo AniList"
+            autoComplete="username"
+            spellCheck={false}
+            value={anilistUser}
+            onChange={(e) => setAnilistUser(e.target.value)}
+          />
+          <button type="submit" className={styles.next} disabled={!anilistUser.trim() || fetching}>
+            {fetching ? 'Chargement…' : 'Importer'}
+          </button>
+        </div>
+        <p className={styles.muted}>La liste doit être publique.</p>
+      </form>
+
+      <p className={styles.separator}>ou</p>
 
       <div
         className={`${styles.dropzone} ${dragging ? styles.dragging : ''}`}
@@ -71,7 +127,7 @@ export default function ImportScreen({ list, onLoad, onOpenSave, onNext }: Props
 
       {error && <p className={styles.error}>{error}</p>}
 
-      {list && !error && (
+      {list && !error && !fetching && (
         <div className={styles.summary}>
           <h3>{list.userName}</h3>
           <p>
@@ -86,8 +142,9 @@ export default function ImportScreen({ list, onLoad, onOpenSave, onNext }: Props
           </ul>
           {anilistOnly.length > 0 && (
             <p className={styles.muted}>
-              Dont {anilistOnly.length} sans identifiant MyAnimeList (récupéré via AniList) :{' '}
-              {anilistOnly.map((e) => e.title).join(', ')}
+              Dont {anilistOnly.length} sans identifiant MyAnimeList (musiques cherchées par nom) :{' '}
+              {anilistOnly.slice(0, MAX_LISTED_TITLES).map((e) => e.title).join(', ')}
+              {anilistOnly.length > MAX_LISTED_TITLES && '…'}
             </p>
           )}
           <button type="button" className={styles.next} onClick={onNext}>

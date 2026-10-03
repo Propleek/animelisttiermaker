@@ -21,6 +21,18 @@ export function sleep(ms: number, signal?: AbortSignal): Promise<void> {
   });
 }
 
+/** Réponse HTTP en erreur ; `body` contient le JSON renvoyé par l'API, s'il y en a un. */
+export class HttpError extends Error {
+  readonly status: number;
+  readonly body: unknown;
+
+  constructor(url: string, status: number, statusText: string, body: unknown) {
+    super(`${new URL(url).host} a répondu ${status} ${statusText}`);
+    this.status = status;
+    this.body = body;
+  }
+}
+
 /**
  * POST JSON avec relance : attend `Retry-After` sur un 429,
  * temporisation exponentielle sur les erreurs réseau et 5xx.
@@ -45,7 +57,7 @@ export async function postJson<T>(url: string, body: unknown, signal?: AbortSign
 
     const retryable = response.status === 429 || response.status >= 500;
     if (!retryable || attempt >= MAX_ATTEMPTS) {
-      throw new Error(`${new URL(url).host} a répondu ${response.status} ${response.statusText}`);
+      throw new HttpError(url, response.status, response.statusText, await response.json().catch(() => null));
     }
     const retryAfter = Number(response.headers.get('Retry-After'));
     await sleep(retryAfter > 0 ? retryAfter * 1000 : 1000 * 2 ** attempt, signal);

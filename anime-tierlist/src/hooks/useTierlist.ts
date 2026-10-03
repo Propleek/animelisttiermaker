@@ -24,6 +24,7 @@ export type TierlistAction =
   | { type: 'removeTier'; tierId: string }
   | { type: 'updateTier'; tierId: string; label?: string; color?: string }
   | { type: 'moveTier'; tierId: string; delta: -1 | 1 }
+  | { type: 'toggleCollapse'; tierId: string }
   | { type: 'reset' }
   | { type: 'load'; state: TierlistState };
 
@@ -96,6 +97,12 @@ function reducer(state: TierlistState, action: TierlistAction): TierlistState {
       [tiers[from], tiers[to]] = [tiers[to], tiers[from]];
       return { ...state, tiers };
     }
+
+    case 'toggleCollapse':
+      return {
+        ...state,
+        tiers: state.tiers.map((t) => (t.id === action.tierId ? { ...t, collapsed: !t.collapsed } : t)),
+      };
 
     case 'reset':
       return {

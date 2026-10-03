@@ -2,7 +2,7 @@ import type { AnimeEntry } from '../types';
 import { cacheGet, cacheSet } from './cache';
 import { chunk, postJson, sleep } from './http';
 
-const ANILIST_URL = 'https://graphql.anilist.co';
+export const ANILIST_URL = 'https://graphql.anilist.co';
 const BATCH_SIZE = 50;
 const DELAY_BETWEEN_BATCHES_MS = 1000;
 
@@ -20,7 +20,7 @@ query ($malIds: [Int], $ids: [Int]) {
   }
 }`;
 
-interface Media {
+export interface Media {
   id: number;
   idMal: number | null;
   format: string | null;
@@ -49,6 +49,21 @@ const CACHE_PREFIX = 'anilist:v2:';
 /** Clé stable d'un animé, partagée par le cache et les identifiants d'éléments. */
 export function animeKey(entry: AnimeEntry): string {
   return entry.malId !== null ? `mal-${entry.malId}` : `al-${entry.anilistId}`;
+}
+
+/** Infos utiles d'un média AniList ; l'ID MAL du XML prime sur celui d'AniList. */
+export function toAnimeInfo(m: Media | undefined, malId: number | null): AnimeInfo {
+  return {
+    imageUrl: m?.coverImage.large ?? null,
+    malId: malId ?? m?.idMal ?? null,
+    year: m?.seasonYear ?? m?.startDate.year ?? null,
+    format: m?.format ?? null,
+  };
+}
+
+/** Pré-remplit le cache, pour une liste qui fournit déjà les médias (import par pseudo AniList). */
+export function cacheAnimeInfo(entry: AnimeEntry, info: AnimeInfo): void {
+  cacheSet(CACHE_PREFIX + animeKey(entry), info);
 }
 
 /** Un lot fait au plus 50 IDs, donc une seule page de 50 résultats suffit. */
@@ -92,14 +107,9 @@ export async function fetchAnimeInfo(
 
     for (const entry of batch) {
       const m = entry.malId !== null ? byMalId.get(entry.malId) : byId.get(entry.anilistId!);
-      const info: AnimeInfo = {
-        imageUrl: m?.coverImage.large ?? null,
-        malId: entry.malId ?? m?.idMal ?? null,
-        year: m?.seasonYear ?? m?.startDate.year ?? null,
-        format: m?.format ?? null,
-      };
+      const info = toAnimeInfo(m, entry.malId);
       result.set(animeKey(entry), info);
-      cacheSet(CACHE_PREFIX + animeKey(entry), info);
+      cacheAnimeInfo(entry, info);
     }
     onProgress(result.size, entries.length);
   }

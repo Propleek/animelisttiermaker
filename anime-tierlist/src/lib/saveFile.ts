@@ -95,7 +95,7 @@ export function parseSave(text: string): TierlistSave {
     placed.add(id);
     return true;
   };
-  const tiers = (data.tiers as Tier[]).map((t) => ({ ...t, itemIds: t.itemIds.filter(keep) }));
+  const tiers = (data.tiers as Tier[]).map((t) => ({ ...t, itemIds: t.itemIds.filter(keep), collapsed: t.collapsed === true }));
   const pool = (data.pool as string[]).filter(keep);
   const orphans = Object.keys(items).filter((id) => !placed.has(id));
 

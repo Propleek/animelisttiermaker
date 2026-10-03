@@ -40,6 +40,8 @@ export interface Tier {
   color: string;
   /** Ordre d'affichage. */
   itemIds: string[];
+  /** Tier replié : ses cartes sont masquées, mais il accepte toujours les dépôts. */
+  collapsed?: boolean;
 }
 
 /** Contenu du fichier de sauvegarde JSON. */

@@ -65,3 +65,59 @@
   border-color: var(--accent);
   color: #fff;
 }
+
+.anilist {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.anilist label {
+  font-weight: 600;
+}
+
+.anilist p {
+  margin: 0;
+  font-size: 0.9em;
+}
+
+.anilistRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.anilistRow input {
+  flex: 1 1 12rem;
+  min-width: 0;
+  padding: 0.4em 0.7em;
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.anilistRow input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.anilistRow .next {
+  margin-top: 0;
+}
+
+.next:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.separator {
+  margin: 1rem 0;
+  text-align: center;
+  color: var(--text-muted);
+}
