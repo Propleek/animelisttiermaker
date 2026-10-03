@@ -1,0 +1,131 @@
+.card {
+  position: relative;
+  width: var(--card-w);
+  height: var(--card-h);
+  border-radius: 3px;
+  overflow: hidden;
+  background: var(--surface);
+  user-select: none;
+}
+
+.card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.noImage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  padding: 0.25rem;
+  font-size: 0.7rem;
+  text-align: center;
+  color: var(--text-muted);
+  overflow: hidden;
+}
+
+.badge {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  padding: 0 4px;
+  border-radius: 3px;
+  background: rgb(0 0 0 / 75%);
+  color: #fff;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+/* Carte de chanson */
+
+.current {
+  outline: 3px solid var(--accent);
+  outline-offset: -3px;
+}
+
+@media (max-width: 600px) {
+  .caption {
+    padding: 10px 3px 2px;
+    font-size: 0.55rem;
+  }
+
+  .play {
+    width: 20px;
+    height: 20px;
+    font-size: 0.55rem;
+  }
+
+  .badge {
+    font-size: 0.6rem;
+  }
+}
+
+/* Pas de surbrillance de lecture dans l'export PNG. */
+[data-exporting] .current {
+  outline: none;
+}
+
+.play {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: rgb(0 0 0 / 70%);
+  color: #fff;
+  font-size: 0.65rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.play:hover {
+  background: var(--accent);
+}
+
+.playError {
+  background: #c9423a;
+}
+
+.caption {
+  position: absolute;
+  inset: auto 0 0;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 4px 3px;
+  background: linear-gradient(transparent, rgb(0 0 0 / 85%) 40%);
+  color: #fff;
+  font-size: 0.62rem;
+  line-height: 1.2;
+  pointer-events: none;
+}
+
+.songTitle {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+}
+
+.artist {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  opacity: 0.8;
+}
+
+.overlay {
+  box-shadow: 0 8px 20px rgb(0 0 0 / 50%);
+  cursor: grabbing;
+  transform: scale(1.05);
+}

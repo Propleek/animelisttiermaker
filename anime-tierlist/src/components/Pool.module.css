@@ -1,0 +1,59 @@
+.pool {
+  margin-top: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.header h3 {
+  margin: 0;
+}
+
+.count {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.search {
+  flex: 0 1 20rem;
+  min-width: 0;
+  padding: 0.4em 0.7em;
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.search:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.items {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: flex-start;
+  gap: 2px;
+  min-height: calc(var(--card-h) + 1rem);
+  padding: 0.5rem;
+}
+
+.over {
+  background: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.empty {
+  margin: auto;
+  color: var(--text-muted);
+}

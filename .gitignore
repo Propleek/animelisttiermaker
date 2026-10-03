@@ -1,0 +1,9 @@
+# Paramètres locaux de Claude Code
+.claude/
+
+# Documents de suivi du développement (usage local)
+ROADMAP.md
+progress.md
+
+# Documentation technique du site (usage local)
+anime-tierlist/README.md

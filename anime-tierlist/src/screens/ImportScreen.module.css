@@ -1,0 +1,67 @@
+.dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 2.5rem 1rem;
+  border: 2px dashed var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.dropzone p {
+  margin: 0;
+}
+
+.dropzone:hover,
+.dragging {
+  border-color: var(--accent);
+}
+
+.dragging {
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface));
+}
+
+.muted {
+  color: var(--text-muted);
+}
+
+.error {
+  margin-top: 1rem;
+  padding: 0.75rem 1rem;
+  border-left: 4px solid #e5534b;
+  background: color-mix(in srgb, #e5534b 12%, var(--surface));
+  border-radius: 4px;
+}
+
+.summary {
+  margin-top: 1.5rem;
+  padding: 1.25rem;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.summary p {
+  margin: 0.25rem 0;
+}
+
+.statuses {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.25rem;
+  margin: 0.5rem 0;
+  padding: 0;
+  list-style: none;
+  color: var(--text-muted);
+}
+
+.next {
+  margin-top: 1rem;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}

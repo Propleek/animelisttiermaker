@@ -1,0 +1,69 @@
+# Anime Tierlist
+
+Crée une tierlist, façon TierMaker, à partir de ta liste d'animés MyAnimeList : classe tes **animés**, leurs **openings** ou leurs **endings**, écoute les musiques directement sur la page, puis sauvegarde ou partage le résultat en image.
+
+**👉 [Ouvrir le site](https://<utilisateur>.github.io/<dépôt>/)**
+
+Aucune inscription, aucune installation : tout se passe dans le navigateur.
+
+## Fonctionnalités
+
+- **Import de ta liste** depuis un export XML MyAnimeList : le site affiche le nombre d'animés et leur répartition par statut.
+- **Trois types de tierlist :** animés, openings ou endings.
+- **Filtre par statut** (Completed, Watching, Dropped…) pour ne classer que ce que tu veux.
+- **Couvertures récupérées automatiquement** pour chaque animé.
+- **Écoute des musiques :** chaque opening ou ending a un bouton ▶, et une barre de lecture permet la pause, de se déplacer dans le morceau et de régler le volume.
+- **Glisser-déposer** à la souris, au clavier ou au doigt sur mobile (appui long sur une carte).
+- **Tiers personnalisables :** renommer, changer la couleur, ajouter, supprimer ou réordonner les lignes.
+- **Recherche** dans les cartes non classées, par titre d'animé, titre de chanson ou artiste.
+- **Sauvegarde en fichier JSON**, pour reprendre ta tierlist plus tard exactement où tu l'avais laissée.
+- **Export en image PNG**, prête à partager : en-tête avec ton pseudo, le type de tierlist et la date ; titre et artiste visibles sur chaque musique.
+
+## Utilisation
+
+### 1. Récupérer ta liste au format XML
+
+- **Depuis MyAnimeList :** menu de ton profil → *Import/Export* → *Export My List* → *Export Anime List*. Le fichier téléchargé est compressé (`.xml.gz`) : décompresse-le pour obtenir le `.xml` (clic droit → *Extraire*, ou avec 7-Zip).
+- **Depuis AniList :** utilise un outil de conversion qui exporte ta liste AniList au format XML MyAnimeList. Les animés absents de MyAnimeList y sont gardés en commentaire et le site sait les retrouver.
+
+### 2. Créer la tierlist
+
+1. Sur le site, dépose ton fichier `.xml` (ou clique sur *Choisir un fichier*).
+2. Clique sur *Continuer*, choisis le type de tierlist (**Animés**, **Openings** ou **Endings**) et les statuts à inclure.
+3. Clique sur *Créer la tierlist*. Le premier chargement prend quelques secondes ; les suivants sont quasi instantanés.
+
+### 3. Classer
+
+- Glisse les cartes de la zone **Non classés** vers les tiers. Tu peux aussi les réordonner dans un tier, ou les renvoyer dans la réserve.
+- **Échap** annule un déplacement en cours.
+- À droite de chaque tier : **▲ / ▼** pour le déplacer, **⚙** pour le renommer, changer sa couleur ou le supprimer.
+- *+ Ajouter un tier* crée une nouvelle ligne ; *Réinitialiser* renvoie toutes les cartes dans la réserve.
+- En mode Openings / Endings, **▶** sur une carte lance la musique.
+
+### 4. Sauvegarder et partager
+
+- **Sauvegarder (JSON)** télécharge un fichier contenant toute ta tierlist. Pour la reprendre, dépose ce fichier `.json` sur la page d'accueil du site : elle s'ouvre directement.
+- **Exporter (PNG)** télécharge une image de la tierlist, sans la réserve ni les boutons.
+- Un indicateur signale les modifications non sauvegardées, et le navigateur te prévient si tu fermes la page avant de sauvegarder.
+
+## D'où viennent les données ?
+
+| Données | Source |
+|---|---|
+| Couvertures des animés | [AniList](https://anilist.co) |
+| Liste des openings et endings | [AnisongDB](https://anisongdb.com) |
+| Fichiers audio | [Anime Music Quiz](https://animemusicquiz.com) |
+
+Le site n'a pas de serveur : ta liste est lue **dans ton navigateur** et n'est envoyée nulle part. Seuls les identifiants et titres des animés sont transmis à AniList et AnisongDB pour récupérer les couvertures et les musiques. Les réponses sont mises en cache dans ton navigateur pour accélérer les visites suivantes.
+
+## Limites connues
+
+- **Animés sans musique :** certains n'ont pas d'opening ou d'ending (films, épisodes spéciaux), d'autres sont absents d'AnisongDB ou y sont enregistrés sous un autre nom. Ils sont listés dans un encadré au-dessus de la tierlist.
+- **Animés très récents :** quand seule la vidéo est disponible, c'est sa piste son qui est lue. Le fichier est plus lourd, mais la lecture démarre tout de suite.
+- **Connexion requise** pour charger les couvertures et écouter les musiques.
+
+## Crédits
+
+Merci à AniList, AnisongDB et Anime Music Quiz, dont les données rendent ce site possible. Les musiques et les illustrations appartiennent à leurs ayants droit respectifs ; ce site est un projet personnel sans but commercial.
+
+Réalisé avec React, Vite, dnd-kit et html-to-image.
